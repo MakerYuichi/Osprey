@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { getKarma, subscribeToKarma } from '../utils/karma';
 
 const KarmaCounter = () => {
-  const [karma, setKarma] = useState(8); // default karma
+  const [karma, setKarma] = useState(getKarma());
 
-  // Placeholder: Later connect to Firebase Firestore
+  useEffect(() => {
+    subscribeToKarma(setKarma); // React listens for karma updates
+  }, []);
 
   return (
-    <div className="text-lg font-medium">
-      Karma: {karma}
+    <div className="mb-4 text-lg">
+      🔥 Karma Points: <span className="font-semibold">{karma}</span>
     </div>
   );
 };
 
 export default KarmaCounter;
+
 
 

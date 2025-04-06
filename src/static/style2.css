@@ -1,0 +1,248 @@
+/* Chat Window Wrapper */
+.chat-window-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;  /* Ensuring the layout uses horizontal space */
+  align-items: stretch;
+  justify-content: space-between;  /* Ensures space is between the panels */
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+}
+
+/* Inner Flex Layout */
+.chat-window-inner {
+  display: flex;
+  width: 100%;
+  gap: 32px;
+  height: 100%; /* Full height to ensure proper stretching */
+}
+
+/* Chat History Panel */
+.chat-history-panel {
+  width: 30%;
+  min-width: 320px;
+  background-color: #13131f;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+  box-shadow: inset 0 0 10px #00000066;
+}
+
+.chat-history-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #d1d5db;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #4b5563;
+  padding-bottom: 10px;
+}
+
+.chat-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-history-message {
+  background-color: #2a2a3d;
+  color: #f3f4f6;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.chat-history-message.toxic {
+  background-color: #991b1b;
+  color: #fff;
+  filter: blur(3px);
+}
+
+.chat-history-time {
+  display: block;
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+.reflection-buttons {
+  display: flex;
+  gap: 100px; /* space between buttons */
+  justify-content: center; /* center buttons horizontally */
+  flex-wrap: wrap; /* optional: allows wrapping on smaller screens */
+  margin-top: 1rem;
+}
+
+/* Chat Display Panel */
+.chat-display-panel {
+  width: 70%;  /* Adjusted to take up more space */
+  background-color: rgba(30, 30, 47, 0.8);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it fills the vertical space */
+}
+
+.chat-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #f3f4f6;
+  margin-bottom: 24px;
+}
+
+.chat-message-window {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background-color: #151525;
+  border-radius: 12px;
+  border: 1px solid #4b5563;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 480px;
+}
+
+.chat-message-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-message-container.align-right {
+  align-items: flex-end;
+}
+
+.chat-message-container.align-left {
+  align-items: flex-start;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+/* Chat Input */
+.chat-input-container {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chat-input-container textarea {
+  flex-grow: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #4b5563;
+  background-color: #1f1f2e;
+  color: #f3f4f6;
+  resize: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  height: 50px;
+}
+
+.chat-input-container button {
+  background-color: #4f46e5;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Global Empathy Lens - Ensuring full display */
+.global-empathy {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: #2a2a3d;
+  border-radius: 8px;
+  border-left: 4px solid #4f46e5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.global-empathy-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #d1d5db;
+  margin-bottom: 8px;
+}
+
+.global-empathy-message {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #f3f4f6;
+  white-space: normal;
+  word-wrap: break-word;
+  padding: 8px 0;
+  word-break: break-word;
+}
+
+/* Ensuring the messages don't get truncated */
+.chat-message-window {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Remove any truncation classes */
+.global-empathy-message.truncated {
+  display: none; 
+}
+
+.global-empathy-message.full {
+  display: block !important;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 1200px) {
+  .chat-window-wrapper {
+    padding: 30px;
+  }
+  
+  .chat-window-inner {
+    flex-direction: column;
+  }
+  
+  .chat-history-panel {
+    width: 100%;
+    height: 300px;
+  }
+  
+  .chat-display-panel {
+    width: 100%;
+  }
+}
+
+.message-blurred {
+  filter: blur(4px);
+  opacity: 0.5;
+}
+
+.reflection-section {
+  padding: 12px;
+  background-color: #2a2a3d;
+  border-radius: 10px;/* this only works in flex containers */
+  position: relative;
+  margin-top: 100px; /* 👈 pushes it downward */
+  color: #f3f4f6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

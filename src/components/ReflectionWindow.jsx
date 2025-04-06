@@ -1,19 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import rephraseText from '../utils/rephrase';
-import { updateKarma } from '../utils/karma';
+import { updateKarma, getKarma } from '../utils/karma';
+import checkToxicity from '../utils/toxicity';
+import ContextualEmpathyMap from './ContextualEmpathyMap';
+import { getEmpathyMap } from '../utils/cosmicContext';
+import MirrorVerseAI from './MirrorVerseAI';
+import '../static/style2.css'; // 👈 Your CSS file
 
-const ReflectionWindow = ({ originalMessage, onClose }) => {
-  const [rephrased, setRephrased] = useState('');
+const ReflectionWindow = ({ originalMessage, onClose, sendMessage }) => {
   const [timeoutActive, setTimeoutActive] = useState(false);
+  const [karma, setKarma] = useState(0);
+  const [empathyMap, setEmpathyMap] = useState(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setTimeoutActive(true), 7000);
+    const timer = setTimeout(() => {
+      setTimeoutActive(true);
+      onClose(); // 👈 close the reflection window after timeout
+    }, 7000);
+  
+    const currentKarma = getKarma();
+    setKarma(currentKarma);
+  
+    if (currentKarma > 3 && originalMessage) {
+      const map = getEmpathyMap(originalMessage);
+      setEmpathyMap(map);
+    } else {
+      setEmpathyMap(null);
+    }
+  
     return () => clearTimeout(timer);
-  }, []);
+  }, [originalMessage, onClose]);
+  
 
   const handleRephrase = async () => {
     const newText = await rephraseText(originalMessage);
-    console.log('Rephrased message sent:', newText);
+    const isToxic = await checkToxicity(newText);
+
+    if (isToxic) {
+      updateKarma(-1);
+      console.log('😬 Still toxic after rephrasing. Message blurred.');
+    } else {
+      updateKarma(0.25);
+      console.log('✅ Clean rephrased message sent:', newText);
+      sendMessage(newText);
+    }
+
     onClose();
   };
 
@@ -30,18 +61,39 @@ const ReflectionWindow = ({ originalMessage, onClose }) => {
   };
 
   return (
-    <div className="bg-yellow-100 p-4 rounded mt-4">
-      <p className="mb-2">⚠️ This message may be toxic:</p>
-      <p className="italic">“{originalMessage}”</p>
-      <div className="mt-4 flex gap-3">
-        <button onClick={handleRephrase} className="bg-green-600 text-white px-3 py-1 rounded">✅ Rephrase & Send</button>
-        <button onClick={handleSendAnyway} className="bg-red-600 text-white px-3 py-1 rounded">❌ Send Anyway (-1 Karma)</button>
-        <button onClick={handleDelete} className="bg-gray-400 text-white px-3 py-1 rounded">🗑️ Delete (+0.25)</button>
+    <div className="reflection-container">
+      <p className="reflection-warning">⚠️ This message may be toxic:</p>
+      <p className="reflection-original">“{originalMessage}”</p>
+
+      <div className="reflection-buttons">
+        <button className="btn btn-green" onClick={handleRephrase}>
+          ✅ Rephrase & Send
+        </button>
+        <button className="btn btn-red" onClick={handleSendAnyway}>
+          ❌ Send Anyway (-1 Karma)
+        </button>
+        <button className="btn btn-gray" onClick={handleDelete}>
+          🗑️ Delete (+0.25)
+        </button>
       </div>
-      {timeoutActive && <p className="mt-2 text-sm text-gray-600">⏳ Timeout reached. Message removed.</p>}
+
+      {empathyMap && (
+        <div className="reflection-section">
+          <ContextualEmpathyMap map={empathyMap} />
+        </div>
+      )}
+
+      {karma <= 3 && (
+        <div className="reflection-section">
+          <MirrorVerseAI karma={karma} />
+        </div>
+      )}
+
+      
     </div>
   );
 };
 
 export default ReflectionWindow;
+
 
