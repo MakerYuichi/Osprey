@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import MessageInput from './components/MessageInput';
+import KarmaCounter from './components/KarmaCounter';
+import ReflectionWindow from './components/ReflectionWindow';
+import MirrorverseModal from './components/MirrorverseModal';
+import { detectToxicity } from './utils/toxicity'; // from HuggingFace
+import { addMessageToFirestore } from './utils/firebase';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [flaggedMessage, setFlaggedMessage] = useState(null);
+  const [karma, setKarma] = useState(100);
+  const userId = "demo-user"; // Replace with actual auth user
+
+  const handleSendMessage = async (text) => {
+    const score = await detectToxicity(text);
+    if (score > 0.9) {
+      setFlaggedMessage(text);
+    } else {
+      await addMessageToFirestore(text, userId);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <KarmaCounter userId={userId} />
+      <MessageInput onSubmit={handleSendMessage} />
 
-export default App
+      {flaggedMessage && (
+        <ReflectionWindow
+          message={flaggedMessage}
+          onSend={async (finalMsg) => {
+            await addMessageToFirestore(finalMsg, userId);
+            setFlaggedMessage(null);
+          }}
+          onCancel={() => setFlaggedMessage(null)}
+        />
+      )}
+
+      {karma <= 3 && <MirrorverseModal />}
+    </div>
+  );
+}
