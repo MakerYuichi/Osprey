@@ -1,26 +1,16 @@
 // src/components/MirrorverseModal.jsx
-export default function MirrorverseModal({ onClose }) {
-    const scenarios = [
-      "🕰️ You see your future self reading this aloud in an interview...",
-      "📸 Friends screenshot this and it ends up in a meme group.",
-      "📰 Leaked chat shows you being verbally aggressive.",
-    ];
-  
-    const message = scenarios[Math.floor(Math.random() * scenarios.length)];
-  
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg max-w-md text-center">
-          <h2 className="text-xl font-bold mb-4">⚠️ Digital Reflection</h2>
-          <p className="text-gray-700">{message}</p>
-          <button
-            className="mt-6 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            onClick={onClose}
-          >
-            I’ll do better
-          </button>
-        </div>
-      </div>
-    );
-  }
+import React from 'react';
+
+const MirrorVerseModel = ({ message }) => {
+  return (
+    <div className="bg-yellow-100 p-4 rounded-xl shadow-md">
+      <p className="font-semibold">Your digital self says:</p>
+      <p className="italic">“Why would you say this to me?”</p>
+      <p className="text-sm mt-2 text-gray-600">Potential Impact: This could harm your reputation.</p>
+    </div>
+  );
+};
+
+export default MirrorVerseModel;
+
   

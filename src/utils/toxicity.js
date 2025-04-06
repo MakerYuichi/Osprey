@@ -1,21 +1,32 @@
 // src/utils/toxicity.js
-export const detectToxicity = async (text) => {
-    // 1. Quick keyword check first
-    const toxicKeywords = ['stupid', 'idiot', 'hate', 'annoying'];
-    if (toxicKeywords.some(word => text.toLowerCase().includes(word))) {
-      return 0.95; // Immediately toxic
-    }
-  
-    // 2. HuggingFace API call
-    try {
-      const hf = new HfInference(process.env.HF_TOKEN);
-      const result = await hf.textClassification({
-        model: 'unitary/toxic-bert',
-        inputs: text,
-      });
-      return result[0]?.score || 0;
-    } catch (e) {
-      console.error("HF failed, defaulting to 0");
-      return 0; // Fail-safe
-    }
-  };
+const checkToxicity = async (text) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/check-toxicity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text }),
+      credentials: 'include' // Optional if you plan to use cookies/session auth later
+    });
+
+    if (!response.ok) throw new Error('Toxicity API failed');
+
+    const result = await response.json();
+
+    // HuggingFace toxicity result check
+    return result[0]?.some(item =>
+      item.label === 'toxic' && item.score > 0.7
+    );
+
+  } catch (error) {
+    console.warn('⚠️ Using fallback detection (HuggingFace failed)');
+    const toxicKeywords = ['idiot', 'stupid', 'hate', 'dumb', 'trash'];
+    return toxicKeywords.some(word =>
+      text.toLowerCase().includes(word)
+    );
+  }
+};
+
+export default checkToxicity;
+

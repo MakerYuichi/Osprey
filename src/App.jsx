@@ -1,51 +1,17 @@
-import { useEffect, useState } from 'react';
-import { detectToxicity } from './utils/toxicity';
-import { addMessageToFirestore } from './utils/messages';
+import React from 'react';
+import KarmaCounter from './components/KarmaCounter';
+import ChatInput from './components/ChatInput';
 
-function App() {
-  const [userId, setUserId] = useState(null);
-  const [flaggedMessage, setFlaggedMessage] = useState(null);
-
-  useEffect(() => {
-    initAuth().then(uid => setUserId(uid));
-  }, []);
-
-  const handleSend = async (text) => {
-    if (!userId || !text.trim()) return;
-
-    const toxicity = await detectToxicity(text);
-    if (toxicity > 0.9) {
-      setFlaggedMessage(text);
-    } else {
-      await addMessageToFirestore(text, userId);
-    }
-  };
-
-  if (!userId) return <div>Loading...</div>;
-
+const App = () => {
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <KarmaCounter userId={userId} />
-      
-      <input
-        type="text"
-        onKeyDown={(e) => e.key === 'Enter' && handleSend(e.target.value)}
-        placeholder="Type a message..."
-        className="w-full p-2 border rounded"
-      />
-
-      {flaggedMessage && (
-        <ReflectionWindow
-          message={flaggedMessage}
-          onSend={async (msg) => {
-            await addMessageToFirestore(msg, userId);
-            setFlaggedMessage(null);
-          }}
-          onCancel={() => setFlaggedMessage(null)}
-        />
-      )}
+    <div className="p-8 max-w-3xl mx-auto font-sans">
+      <h1 className="text-3xl font-bold mb-4">Osprey Chat Moderation</h1>
+      <KarmaCounter />
+      <ChatInput />
     </div>
   );
-}
+};
 
 export default App;
+
+

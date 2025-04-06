@@ -1,17 +1,17 @@
-// src/components/KarmaCounter.jsx
-// src/components/KarmaCounter.jsx
-import { onSnapshot, doc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import React, { useState, useEffect } from 'react';
 
-export default function KarmaCounter({ userId }) {
-  const [karma, setKarma] = useState(100);
+const KarmaCounter = () => {
+  const [karma, setKarma] = useState(8); // default karma
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(doc(db, "users", userId), (doc) => {
-      setKarma(doc.data()?.karma || 100);
-    });
-    return () => unsubscribe();
-  }, [userId]);
+  // Placeholder: Later connect to Firebase Firestore
 
-  // ... rest unchanged ...
-}
+  return (
+    <div className="text-lg font-medium">
+      Karma: {karma}
+    </div>
+  );
+};
+
+export default KarmaCounter;
+
+

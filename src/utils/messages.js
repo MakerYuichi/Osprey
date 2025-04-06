@@ -1,11 +1,11 @@
-// src/utils/messages.js
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
-export const addMessageToFirestore = async (text, userId) => {
-  await setDoc(doc(db, "messages", Date.now().toString()), {
-    text,
+export const logMessage = async (userId, message, isToxic) => {
+  await addDoc(collection(db, "messages"), {
     userId,
-    timestamp: serverTimestamp(),
-    isToxic: false, // Flagged messages never reach here
+    message,
+    isToxic,
+    timestamp: new Date()
   });
 };

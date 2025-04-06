@@ -1,40 +1,24 @@
-const DAILY_KARMA_KEY = 'daily_karma';
-const LAST_RESET_KEY = 'karma_last_reset';
-const MAX_DAILY_KARMA = 8;
+let karma = 8;
+let dailyKarmaAdd = 0;
 
-// Reset karma if a new day has started
-function maybeResetDailyKarma() {
-  const lastReset = localStorage.getItem(LAST_RESET_KEY);
-  const today = new Date().toDateString();
+let onKarmaChange = null; // 🧠 This will point to setKarma from React
 
-  if (lastReset !== today) {
-    localStorage.setItem(DAILY_KARMA_KEY, MAX_DAILY_KARMA);
-    localStorage.setItem(LAST_RESET_KEY, today);
-  }
-}
+export const getKarma = () => karma;
 
-// Get current karma (after possible reset)
-export const getKarma = () => {
-  maybeResetDailyKarma();
-  return parseFloat(localStorage.getItem(DAILY_KARMA_KEY)) || MAX_DAILY_KARMA;
+export const subscribeToKarma = (callback) => {
+  onKarmaChange = callback;
 };
 
-// Update karma with delta (+/-), keeping within bounds
 export const updateKarma = (change) => {
-  maybeResetDailyKarma();
+  if (change > 0 && dailyKarmaAdd >= 1.5) return;
 
-  const current = getKarma();
-  let updated = current + change;
+  karma = Math.max(0, Math.min(8, karma + change));
 
-  if (change > 0) {
-    // Cap daily gain at MAX_DAILY_KARMA
-    updated = Math.min(updated, MAX_DAILY_KARMA);
-  } else {
-    // Never go below 0
-    updated = Math.max(updated, 0);
-  }
+  if (change > 0) dailyKarmaAdd += change;
 
-  localStorage.setItem(DAILY_KARMA_KEY, updated);
-  return updated;
+  console.log('🔁 Karma updated to:', karma);
+
+  // 🧠 Call the subscribed state updater
+  if (onKarmaChange) onKarmaChange(karma);
 };
 
